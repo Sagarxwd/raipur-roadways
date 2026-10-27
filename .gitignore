@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# Production builds
+dist/
+frontend/dist/
+
+# Environment files & secrets (DO NOT COMMIT)
+.env
+.env.*
+*.env
+backend/.env
+backend/.env.*
+!*.env.example
+!**/.env.example
+
+# Logs and system files
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Vercel & IDE
+.vercel
+.vscode/
+.idea/

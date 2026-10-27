@@ -1,0 +1,29 @@
+const A=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'],B=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+const two=n=>n<20?A[n]:B[n/10|0]+(n%10?' '+A[n%10]:''),three=n=>(n>99?A[n/100|0]+' Hundred'+(n%100?' ':''):'')+(n%100?two(n%100):'');
+function words(n){n=Math.round(n);if(!n)return'';let s='';for(const[d,w]of[[1e7,'Crore'],[1e5,'Lakh'],[1e3,'Thousand']])if(n>=d){s+=three(n/d|0)+' '+w+' ';n%=d}if(n)s+=three(n);return s.trim()+' Rupees Only'}
+const E=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const calc=x=>{const fr=Math.round((+x.chargedWt||0)*(+x.rate||0)),b=+x.border||0,o=+x.others||0,g=+x.gstAmt||0;return{fr,b,o,g,t:Math.round(fr+b+o+g)}};const inr=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+const SVGLOGO='<svg width="96" height="40" viewBox="0 0 96 40"><text x="0" y="31" font-size="36" font-weight="900" font-style="italic" fill="#1b3a8a" font-family="Arial Black,Arial,sans-serif">R</text><text x="34" y="31" font-size="36" font-weight="900" font-style="italic" fill="#8a8a8a" font-family="Arial Black,Arial,sans-serif">R</text><path d="M2 36 L92 36" stroke="#1b3a8a" stroke-width="3"/></svg>';
+const LOGO='<img src="/logo.png" alt="" style="height:54px" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'"><span style="display:none">'+SVGLOGO+'</span>';
+const fmtD = (d) => { if (!d || d === 'undefined' || d === 'null') return ''; const [y, m, dd] = String(d).split('-'); return dd ? `${+dd}/${+m}/${y}` : String(d) };
+const fmtX = (d) => { if (!d || d === 'undefined' || d === 'null') return ''; const [y, m, dd] = String(d).split('-'); return dd ? `${dd}-${m}-${y}` : String(d) };
+export function sheetHTML(x,c,cfg){const F0=()=>({n:E(cfg.name),pan:E(cfg.pan),mob:cfg.mob.split('\n').map(E),bank:cfg.bank.split('\n').map(E)});const F=F0(),{b,o,g,t}=calc(x),w3=v=>v===''||v==null?'':(+v).toFixed(3);
+const prow=(lb,n,a,gs)=>`<div class="row2"><div class="lb">${lb}</div><div class="tx"><span>${E(n)}</span><span>${E(a)}</span><span style="font-weight:700">GSTIN :- &nbsp; ${E(gs)}</span></div></div>`;
+return `<div class="sheetwrap"><div class="sheet"><div class="bl c b" style="font-size:14px">${E(cfg.top1)}</div><div class="bl c b">${E(cfg.top2)}</div>
+<div class="g2"><div class="L"><div class="pan">PAN NO - ${F.pan}</div><div class="brand">${LOGO}<span>${F.n}</span></div><div class="ho gry">${E(cfg.addr)}</div><div class="logi gry">${E(cfg.tag)}</div></div>
+<div class="R"><div class="mob">MOB. NO. ${F.mob.join('<br>')}<br><span class="em">EMAIL ID - ${E(cfg.email)}</span></div><div class="logi gry" style="border-top:1px solid #000">${c}</div></div></div>
+<div class="g2 mid"><div class="L">${prow('CONSIGNOR<br>NAME &amp;<br>ADDRESS',x.consignor,x.consignorAddr,x.consignorGstin)}${prow('CONSIGNEE<br>NAME &amp;<br>ADDRESS',x.consignee,x.consigneeAddr,x.consigneeGstin).replace('border-bottom:1px solid #000','')}</div>
+<div class="R"><div class="meta"><div class="lb"><small>CONSIGNMENT<br>NOTE. NO.</small></div><div class="vl">${x.lrNo||''}</div></div><div class="meta"><div class="lb">DATE</div><div class="vl">${fmtD(x.date)}</div></div><div class="meta"><div class="lb">TRUCK NO.</div><div class="vl">${E(x.truck)}</div></div><div class="meta"><div class="lb">FROM</div><div class="vl">${E(x.from)}</div></div><div class="meta"><div class="lb">TO</div><div class="vl">${E(x.to)}</div></div></div></div>
+<table class="gt"><colgroup><col style="width:18.6%"><col style="width:12.2%"><col style="width:9.7%"><col style="width:7.8%"><col style="width:7.9%"><col style="width:8.1%"><col style="width:10.5%"><col style="width:25.2%"></colgroup>
+<tr style="border-top:1px solid #000"><th colspan="2" style="height:40px">${E(cfg.l_desc)}</th><th>${E(cfg.l_qty)}</th><th>${E(cfg.l_act)}</th><th style="font-size:11px">${E(cfg.l_chg)}</th><th style="font-size:11.5px">${E(cfg.l_rate)}</th><th>FREIGHT<br>Rs.</th><th style="font-weight:700">${E(cfg.l_rem)}</th></tr>
+<tr><td colspan="2" class="gd">${E(x.goods)}</td><td style="vertical-align:top"><span class="mu">${E(x.qty)||E(cfg.u_qty)}</span></td><td><b>${E(x.actualWt)}</b><span class="mu un">${E(cfg.u_act)}</span></td><td style="vertical-align:top"><b>${w3(x.chargedWt)}</b><span class="mu un">${E(cfg.u_chg)}</span></td><td style="vertical-align:top"><b>${E(x.rate)}</b><span class="mu un">${E(cfg.u_rate)}</span></td><td rowspan="6" class="pay">${E(cfg.l_pay)}<br>${t||''} /-<br>ONLY</td><td rowspan="6" class="bank">${x.rem?E(x.rem)+'<br><br>':''}${F.bank.join('<br>')}</td></tr>
+<tr><td class="gl">${E(cfg.l_gstby)}</td><td colspan="4" style="font-weight:700">${E(x.gstBy)}</td></tr>
+<tr><td colspan="5" rowspan="2" style="font-weight:700">${E(cfg.l_pdoc)}</td><td class="am">${E(cfg.l_border)}<b>${b||''}</b></td></tr>
+<tr><td class="am">${E(cfg.l_others)}<b>${o||''}</b></td></tr>
+<tr><td style="height:30px">${E(cfg.l_docno)}</td><td>${E(cfg.l_val)}</td><td colspan="3">${E(cfg.l_eway)}</td><td class="am">${E(cfg.l_gst)}<b>${g||''}</b></td></tr>
+<tr><td style="height:38px"><b>${E(x.doc)}${x.doc&&x.docDate?'-':''}${x.docDate?fmtD(x.docDate):''}</b></td><td><b>${E(x.val)}</b></td><td colspan="3"><b>${E(x.eway)}</b></td><td class="am">${E(cfg.l_total)}<b>${t||''}</b></td></tr>
+<tr class="nt"><td style="text-align:center!important">1</td><td colspan="6">${E(cfg.note1)}</td><td class="gry" style="text-align:left;vertical-align:top;border-bottom:1px solid #000" rowspan="2">FOR:-&nbsp; ${F.n}</td></tr>
+<tr class="nt"><td style="text-align:center!important">2</td><td colspan="6">${E(cfg.note2)}</td></tr></table>
+<div class="ack">${E(cfg.ack)}</div></div></div>`}
+
+export {E,calc,words,inr,fmtD,fmtX};
